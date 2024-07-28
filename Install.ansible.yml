@@ -1,0 +1,16 @@
+---
+- name: Install docker on works
+  hosts: webserver
+  become: yes
+  vars: 
+    pkg:
+      - maven
+      - docker.io
+  tasks:
+    - name: Installing required package
+      package: name={{ item }} state=present
+      loop: "{{ pkg }}"
+    - name: Start the docker service
+      service: name=docker state=started
+
+  

@@ -1,0 +1,24 @@
+---
+- name: Build and start the web server
+  hosts: webserver
+  become: yes
+  vars:
+    - repo: https://github.com/Sonal0409/DevOpsCodeDemo
+  tasks:
+    - name: Retrieve the git repo
+      git: repo={{ repo }} dest=/tmp/democode
+    - name: Build the WAR file
+      command:
+        cmd: mvn package
+        chdir: /tmp/democode
+    - name: Copy the WAR file 
+      copy: 
+        src: /tmp/democode/target/addressbook.war 
+        dest: /tmp/democode
+        remote_src: yes
+    - name: Build the docker image
+      command:
+        cmd: docker build --tag myimage:ansible .
+        chdir: /tmp/democode
+    - name: Deploy the application
+      command: docker run -d -P myimage:ansible
